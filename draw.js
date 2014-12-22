@@ -20,12 +20,25 @@ var drawTriangle = function () {
             ctx.lineTo(triangle[0].x, triangle[0].y);
         }
         ctx.stroke();
+        ctx.closePath();
     }
+};
+var drawSquare = function () {
+    //l = b*h / (b+h)
+    // var l, b, h;
+    // b = triangle[1].x - triangle[2].x;
+    // h = triangle[1].y;
+    // l = b * h / (b + h);
+    // console.log(l);
+};
+var drawCircle = function (x, y, radius) {
+    console.log(x, y, radius);
+    ctx.arc(x, y, radius, 0, Math.PI * 2, true); // Outer circle
+    ctx.stroke();
 };
 var draw = function () {
     console.log(width, height);
-    ctx.arc(width / 2, height / 2, width / 2, 0, Math.PI * 2, true); // Outer circle
-    ctx.stroke();
+    drawCircle(radius, radius, radius);
     buildTriangle(120);
     triangle.push({
         x: width - triangle[1].x,
@@ -33,6 +46,8 @@ var draw = function () {
     });
     console.log(triangle);
     drawTriangle();
+    drawSquare();
+    drawCircle((triangle[1].x - triangle[2].x) / 2 + triangle[2].x, 380, triangle[0].y - triangle[1].y / Math.PI * -1);
 };
 var setup = function () {
     var canvas = document.getElementById('drawer');
