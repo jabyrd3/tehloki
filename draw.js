@@ -1,75 +1,110 @@
 'use strict';
-var height, width, ctx, radius, triangle = [];
-var buildTriangle = function (angle) {
-	var x = Math.cos(angle) * width / 2 + radius;
-	var y = Math.sin(angle) * width / 2 + radius;
-	triangle.push({
-		x: x,
-		y: y
-	});
-};
-var drawTriangle = function () {
-	for (var i = 0; i < triangle.length; i++) {
-		var point1 = triangle[i];
-		var point2 = triangle[i + 1];
-		ctx.beginPath();
-		ctx.moveTo(point1.x, point1.y);
-		if (point2 !== undefined) {
-			ctx.lineTo(point2.x, point2.y);
+var count = 0;
+var draw = function (event, size, center) {
+	var height, width, ctx, radius, newCenter, newSize, triangle = [];
+	var buildTriangle = function (angle) {
+		if (center === undefined) {
+			var x = Math.cos(angle) * width / 2 + radius;
+			var y = Math.sin(angle) * width / 2 + radius;
+			triangle.push({
+				x: x,
+				y: y
+			});
 		} else {
-			ctx.lineTo(triangle[0].x, triangle[0].y);
+			var x2 = Math.cos(angle) * size / 2 + center.x;
+			var y2 = Math.sin(angle) * size / 2 + center.y;
+			triangle.push({
+				x: x2,
+				y: y2
+			});
 		}
+	};
+	var drawTriangle = function () {
+		for (var i = 0; i < triangle.length; i++) {
+			var point1 = triangle[i];
+			var point2 = triangle[i + 1];
+			ctx.beginPath();
+			ctx.moveTo(point1.x, point1.y);
+			if (point2 !== undefined) {
+				ctx.lineTo(point2.x, point2.y);
+			} else {
+				ctx.lineTo(triangle[0].x, triangle[0].y);
+			}
+			ctx.stroke();
+			ctx.closePath();
+		}
+	};
+	var drawSquare = function () {
+		//l = b*h / (b+h) to get square side length
+		var l, b, h;
+		b = triangle[1].x - triangle[2].x;
+		h = triangle[1].y - triangle[0].y;
+		l = b * h / (b + h);
+		//set points
+		var leftX = triangle[0].x - l / 2;
+		var rightX = leftX + l;
+		var bottomY = triangle[1].y;
+		var topY = triangle[1].y - l;
+		console.log(triangle, leftX, rightX, bottomY, topY);
+		ctx.beginPath();
+		ctx.moveTo(leftX, bottomY);
+		ctx.lineTo(leftX, topY);
+		ctx.lineTo(rightX, topY);
+		ctx.lineTo(rightX, bottomY);
 		ctx.stroke();
 		ctx.closePath();
-	}
-};
-var drawSquare = function () {
-	//l = b*h / (b+h)
-	var l, b, h;
-	b = triangle[1].x - triangle[2].x;
-	h = triangle[1].y;
-	l = b * h / (b + h);
-	var leftX = triangle[0].x - l / 2;
-	var rightX = leftX + l;
-	var bottomY = triangle[1].y;
-	var topY = triangle[1].y - l;
-	console.log(l, leftX, rightX, bottomY, topY);
-	console.log(triangle);
-	ctx.beginPath();
-	ctx.moveTo(leftX, bottomY);
-	ctx.lineTo(leftX, topY);
-	ctx.lineTo(rightX, topY);
-	ctx.lineTo(rightX, bottomY);
-	ctx.stroke();
-	ctx.closePath();
-};
-var drawCircle = function (x, y, radius) {
-	console.log(x, y, radius);
-	ctx.arc(x, y, radius, 0, Math.PI * 2, true); // Outer circle
-	ctx.stroke();
-};
-var draw = function () {
-	console.log(width, height);
-	drawCircle(radius, radius, radius);
-	buildTriangle(120);
-	triangle.push({
-		x: width - triangle[1].x,
-		y: triangle[1].y
-	});
-	console.log(triangle);
-	drawTriangle();
-	drawSquare();
-};
-var setup2 = function () {
+		newCenter = {
+			x: leftX + l / 2,
+			y: bottomY - l / 2
+		};
+		newSize = l;
+	};
+	var drawCircle = function (x, y, radius) {
+		ctx.beginPath();
+		ctx.arc(x, y, radius, 0, Math.PI * 2, true); // Outer circle
+		ctx.stroke();
+		ctx.closePath();
+	};
+	var init = function () {
+		radius = width / 2;
+		triangle.push({
+			x: center === undefined ? radius : center.x,
+			y: center === undefined ? 0 : center.y - size / 2
+		});
+		if (center === undefined) {
+			drawCircle(radius, radius, radius);
+		} else {
+			drawCircle(center.x, center.y, radius);
+		}
+		buildTriangle(120);
+		if (center === undefined) {
+			triangle.push({
+				x: width - triangle[1].x,
+				y: triangle[1].y
+			});
+		} else {
+			triangle.push({
+				x: center.x - (triangle[1].x - center.x),
+				y: triangle[1].y
+			});
+		}
+		drawTriangle();
+		drawSquare();
+	};
+
 	var canvas = document.getElementById('drawer');
 	ctx = canvas.getContext('2d');
-	height = canvas.height;
-	width = canvas.width;
-	radius = width / 2;
-	triangle.push({
-		x: radius,
-		y: 0
-	});
-	draw();
+	if (count === 0) {
+		height = canvas.height;
+		width = canvas.width;
+	} else {
+		height = size;
+		width = size;
+	}
+	init();
+	count++;
+	if (count < 20) {
+		draw(null, newSize, newCenter);
+	}
 };
-window.onload = setup2;
+window.onload = draw;
