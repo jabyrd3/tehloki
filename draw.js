@@ -76,7 +76,7 @@ var draw = function (event, size, center) {
 		} else {
 			drawCircle(center.x, center.y, radius);
 		}
-		buildTriangle(120);
+		buildTriangle(145);
 		if (center === undefined) {
 			triangle.push({
 				x: width - triangle[1].x,
