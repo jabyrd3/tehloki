@@ -33,6 +33,12 @@ var draw = function (event, size, center) {
 			ctx.stroke();
 			ctx.closePath();
 		}
+		var testPoint1 = triangle[0];
+		var testPoint2 = triangle[1];
+		var testPoint3 = triangle[2];
+		var side1Length = Math.sqrt(Math.pow(testPoint2.x - testPoint1.x, 2) + Math.pow(testPoint2.y - testPoint1.y, 2));
+		var side2Length = testPoint2.x - testPoint3.x;
+		console.log('side lengths', side1Length, side2Length);
 	};
 	var drawSquare = function () {
 		//l = b*h / (b+h) to get square side length
@@ -45,7 +51,6 @@ var draw = function (event, size, center) {
 		var rightX = leftX + l;
 		var bottomY = triangle[1].y;
 		var topY = triangle[1].y - l;
-		console.log(triangle, leftX, rightX, bottomY, topY);
 		ctx.beginPath();
 		ctx.moveTo(leftX, bottomY);
 		ctx.lineTo(leftX, topY);
