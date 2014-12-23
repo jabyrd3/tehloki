@@ -112,4 +112,17 @@ var draw = function (event, size, center) {
 		draw(null, newSize, newCenter);
 	}
 };
-window.onload = draw;
+window.onload = function () {
+	draw();
+
+	var click = 1;
+	var ctx = document.getElementById('drawer').getContext('2d');
+	var zoom = function (clicks) {
+		console.log('zoom');
+		ctx.scale(1.1 * click, 1.1 * click);
+		click++;
+	};
+	document.getElementById('drawer').onclick = function () {
+		zoom();
+	};
+};
